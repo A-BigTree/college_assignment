@@ -43,6 +43,8 @@ private slots:
 
     void on_actionread_binary_triggered();
 
+    void on_actionSave_triggered();
+
 private:
     Ui::MainWindow *ui;
     //原始图片

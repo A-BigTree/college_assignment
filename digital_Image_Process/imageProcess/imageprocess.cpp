@@ -4,7 +4,6 @@ ImageProcess::ImageProcess(){
 
 }
 
-
 ImageInfo* ImageProcess::toGray(ImageInfo *image){
     int height = image->getImage()->height();
     int width = image->getImage()->width();

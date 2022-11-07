@@ -259,3 +259,21 @@ void MainWindow::on_actionread_binary_triggered()
     }
 }
 
+
+void MainWindow::on_actionSave_triggered(){
+    int i;
+    for(i = 0; i < resultNum; i++){
+        QString curPath = QDir::currentPath();
+        QString dlgTitle = "保存结果图片";
+        QString filter = "灰度图(*.bmp);;矢量图(*.png);;标准图(*.jpg);;所有文件(*.*)";
+        QString aFileName = QFileDialog::getSaveFileName(this, dlgTitle, curPath.append("/untitled"), filter);
+        //qDebug()<<aFileName;
+        if(aFileName.isEmpty()){
+            QMessageBox::information(this, tr("错误"), tr("保存图像失败"));
+        }else{
+            resultImages[i]->saveImage(aFileName);
+        }
+    }
+    ui->remarkLabel->setText(QString("结果图像保存成功！共%1张.").arg(i));
+}
+
