@@ -323,7 +323,6 @@ ImageInfo* ImageProcess::grayMapping(unsigned short *pixels, int width, int heig
 
 }
 
-
 unsigned short* ImageProcess::laplaceSharpening(unsigned short *pixels, int width, int height){
     unsigned short *res = new unsigned short[width * height];
     fill(res, res + width * height, 0);
