@@ -15,6 +15,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     parametersetting.cpp \
+    statelinked.cpp \
     zoommanagedialog.cpp
 
 HEADERS += \
@@ -23,6 +24,7 @@ HEADERS += \
     imageprocess.h \
     mainwindow.h \
     parametersetting.h \
+    statelinked.h \
     zoommanagedialog.h
 
 FORMS += \
