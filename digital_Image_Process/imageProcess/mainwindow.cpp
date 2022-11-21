@@ -311,3 +311,27 @@ void MainWindow::runAction(int state){
         break;
     }
 }
+
+
+void MainWindow::wheelEvent(QWheelEvent *event){
+    if(resultNum == 0){
+        return;
+    }
+    QPoint numDegrees = event->angleDelta();
+    double step = 0;
+    if(!numDegrees.isNull()){
+        step = (double) numDegrees.y() / 1200;
+    }
+    event->accept();
+
+    int cWidth = resultImages[0]->getImage()->width();
+    int cHeight = resultImages[0]->getImage()->height();
+
+    cWidth += (int) cWidth * step;
+    cHeight += (int) cHeight * step;
+
+    QImage temp = resultImages[0]->getImage()->scaled(cWidth, cHeight, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    delete resultImages[0];
+    resultImages[0] = new ImageInfo("", "", new QImage(temp));
+    showResultImages();
+}

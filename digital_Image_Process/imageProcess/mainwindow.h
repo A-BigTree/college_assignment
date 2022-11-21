@@ -9,6 +9,7 @@
 #include <QFrame>
 #include<QFile>
 #include<QDebug>
+#include <QMouseEvent>
 
 #include "imageinfo.h"
 #include "imageprocess.h"
@@ -33,6 +34,8 @@ public:
     void showResultImages();
     //运行功能
     void runAction(int state);
+    //滚轮控制图片缩放
+    void wheelEvent(QWheelEvent *event);
 
 private slots:
     //读取图片
