@@ -41,6 +41,8 @@ public:
     unsigned short* laplaceSharpening(unsigned short *pixels, int width, int height);
     //灰度反转
     ImageInfo* grayInversion(ImageInfo *image);
+    //图片左右反转
+    ImageInfo* hReverse(ImageInfo *image);
 
 };
 

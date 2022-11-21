@@ -379,3 +379,23 @@ ImageInfo* ImageProcess::grayInversion(ImageInfo *image){
 
     return new ImageInfo("gray_inversion_image", "灰度反转成功！", imageR);
 }
+
+ImageInfo* ImageProcess::hReverse(ImageInfo *image){
+    QImage* imageR = new QImage(image->getImage()->width(), image->getImage()->height(), QImage::Format_Indexed8);
+    imageR->setColorCount(256);
+    for(int i = 0; i < 256; i++){
+        imageR->setColor(i, qRgb(i, i, i));
+    }
+    uchar* temp = new uchar[image->getImage()->width()];
+    for(int j = 0; j < image->getImage()->height(); j++){
+        const uchar* tempI = image->getImage()->constScanLine(j);
+        for(int i = 0; i < image->getImage()->width(); i++){
+            temp[i] = tempI[image->getImage()->width() - 1 - i];
+        }
+        uchar* scan = imageR->scanLine(j);
+        copy(temp, temp + image->getImage()->width(), scan);
+    }
+    delete[]temp;
+
+    return new ImageInfo("h_reverse_image", "图像左右翻转成功！", imageR);
+}
