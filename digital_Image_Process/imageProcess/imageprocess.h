@@ -39,6 +39,8 @@ public:
     ImageInfo* grayMapping(unsigned short *pixels, int width, int height, int right, int left);
     //拉普拉斯锐化
     unsigned short* laplaceSharpening(unsigned short *pixels, int width, int height);
+    //灰度反转
+    ImageInfo* grayInversion(ImageInfo *image);
 
 };
 
