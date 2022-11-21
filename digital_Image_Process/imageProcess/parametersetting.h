@@ -23,9 +23,19 @@ public:
     bool RIGHT_OR_LEFT;  //左旋或右旋
 
     //灰度窗设置
+    bool IS_G_W;
     int GRAY_SCALE; //最大灰度范围
     Index GRAY_WINDOW; //灰度窗参数
     unsigned short *PIXEL; //大灰度值
+
+    //图像增强
+    bool IS_LA;
+
+    //灰度反转
+    bool IS_G_R;
+
+    //图像左右翻转
+    bool IS_H_R;
 
 
     ParameterSetting();

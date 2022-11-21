@@ -12,9 +12,14 @@ ParameterSetting::ParameterSetting(){
     RIGHT_OR_LEFT = true;
 
     //初始化灰度窗
+    IS_G_W = false;
     GRAY_SCALE = 4096;
-    GRAY_WINDOW.x = 0;
+    GRAY_WINDOW.x = 2048;
     GRAY_WINDOW.y = GRAY_SCALE;
+
+    //初始化反转与翻转
+    IS_G_R = false;
+    IS_H_R = false;
 }
 
 
