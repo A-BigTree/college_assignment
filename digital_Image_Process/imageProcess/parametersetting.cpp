@@ -1,6 +1,12 @@
 #include "parametersetting.h"
 
 ParameterSetting::ParameterSetting(){
+    //命令
+    int code = -1;
+
+    //初始化直方图参数
+    IS_HI = false;
+
     //初始化图像缩放
     WIDTH_AND_HEIGHT.x = 50;
     WIDTH_AND_HEIGHT.y = 50;
@@ -16,6 +22,8 @@ ParameterSetting::ParameterSetting(){
     GRAY_SCALE = 4096;
     GRAY_WINDOW.x = 2048;
     GRAY_WINDOW.y = GRAY_SCALE;
+    PIXEL = NULL;
+    PIXEL_SUM = 0;
 
     //初始化反转与翻转
     IS_G_R = false;

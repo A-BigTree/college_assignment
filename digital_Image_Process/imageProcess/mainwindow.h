@@ -14,6 +14,7 @@
 #include "imageinfo.h"
 #include "imageprocess.h"
 #include "parametersetting.h"
+#include "statelinked.h"
 #include "zoommanagedialog.h"
 #include "graymappingdialog.h"
 
@@ -50,6 +51,10 @@ private slots:
 
     void on_actionSave_triggered();
 
+    void on_actionundo_triggered();
+
+    void on_actiongoto_triggered();
+
 private:
     Ui::MainWindow *ui;
     //原始图片
@@ -58,12 +63,17 @@ private:
     ImageInfo *grayImage = NULL;
     //结果图片列表
     ImageInfo **resultImages = NULL;
+    //保存结果
+    ImageInfo *imageR = NULL;
+
     //结果图片数量
     int resultNum;
     //图像处理
     ImageProcess *process;
     //参数设置
     ParameterSetting *params;
+    //撤销前进操作
+    StateLinked *state;
 
 };
 #endif // MAINWINDOW_H

@@ -238,6 +238,8 @@
     </property>
     <addaction name="actionParameters"/>
     <addaction name="actionExport_Settings"/>
+    <addaction name="actionundo"/>
+    <addaction name="actiongoto"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSetting"/>
@@ -271,6 +273,16 @@
   <action name="actionread_binary">
    <property name="text">
     <string>读取二进制文件</string>
+   </property>
+  </action>
+  <action name="actionundo">
+   <property name="text">
+    <string>撤销</string>
+   </property>
+  </action>
+  <action name="actiongoto">
+   <property name="text">
+    <string>前进</string>
    </property>
   </action>
  </widget>

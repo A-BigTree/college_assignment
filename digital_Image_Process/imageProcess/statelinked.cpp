@@ -7,6 +7,7 @@ StateLinked::StateLinked()
 
 //加入一个操作
 void StateLinked::addParam(ParameterSetting* param){
+    params[eP].code = param->code;
     //复制布尔值
     params[eP].IS_HI = param->IS_HI;
     params[eP].IS_G_W = param->IS_G_W;
@@ -33,7 +34,7 @@ void StateLinked::addParam(ParameterSetting* param){
     if(eP == sP){
         sP = (sP + 1) % MAX_STATE;
     }
-    iP = eP;
+    iP = (eP + 4) % MAX_STATE;
 }
 
 
@@ -45,7 +46,7 @@ bool StateLinked::canUndo(){
 
 //是否可以前进
 bool StateLinked::canGoto(){
-    return iP != eP;
+    return iP != (eP + 4) % MAX_STATE;
 }
 
 

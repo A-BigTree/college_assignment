@@ -7,6 +7,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     process = new ImageProcess();
     params = new ParameterSetting();
+    state = new StateLinked();
+    ui->actionundo->setEnabled(false);
+    ui->actiongoto->setEnabled(false);
 }
 
 MainWindow::~MainWindow(){
@@ -15,6 +18,7 @@ MainWindow::~MainWindow(){
     delete grayImage;
     delete[]resultImages;
     delete process;
+    delete state;
 }
 
 void MainWindow::showImage(QLabel *label, QImage *image){
@@ -90,6 +94,14 @@ void MainWindow::on_actionImport_triggered(){
 
 void MainWindow::on_pushButton_clicked(){
     runAction(ui->comboBox->currentIndex());
+    params->setCode(ui->comboBox->currentIndex());
+    if(ui->comboBox->currentIndex() == 6)
+        params->IS_G_R = !params->IS_G_R;
+    if(ui->comboBox->currentIndex() == 7)
+        params->IS_H_R = !params->IS_H_R;
+    state->addParam(params);
+    ui->actionundo->setEnabled(state->canUndo());
+    ui->actiongoto->setEnabled(state->canGoto());
 }
 
 
@@ -148,6 +160,7 @@ void MainWindow::on_actionread_binary_triggered()
 
         unsigned short max = 0, min = 9999;
 
+        params->PIXEL_SUM = width * height;
         unsigned short* pixels = new unsigned short[width * height];
         for(int i = 0; i < width * height; i++){
             pixels[i] = *(unsigned short*)data;
@@ -206,7 +219,12 @@ void MainWindow::runAction(int state){
     if(resultImages!=NULL){
         delete []resultImages;
     }
+    if(imageR != NULL){
+        delete imageR;
+    }
     resultNum = 0;
+
+    int widthO, heightO;
 
     switch (state) {
 
@@ -215,9 +233,11 @@ void MainWindow::runAction(int state){
         resultImages = new ImageInfo*[2];
         resultNum = 2;
         resultImages[1] = process->imageAverage(originImage);
+        imageR = process->imageAverage(originImage);
         resultImages[0] = process->imageAverage(originImage, false);
         ui->remarkLabel->setText("直方图均衡化成功！");
         showResultImages();
+        params->IS_HI = true;
         break;
 
     //傅里叶变换
@@ -229,6 +249,7 @@ void MainWindow::runAction(int state){
         resultImages = new ImageInfo*[1];
         resultNum = 1;
         resultImages[0] = process->imageZoom(grayImage, params->WIDTH_AND_HEIGHT.x, params->WIDTH_AND_HEIGHT.y);
+        imageR = process->imageZoom(grayImage, params->WIDTH_AND_HEIGHT.x, params->WIDTH_AND_HEIGHT.y);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
         showResultImages();
         break;
@@ -239,6 +260,8 @@ void MainWindow::runAction(int state){
         resultNum = 1;
         resultImages[0] = process->imageRotation(grayImage, params->CENTER_POINT.x, params->CENTER_POINT.y,
                                                  params->ROTATION_ANGLE, params->RIGHT_OR_LEFT);
+        imageR = process->imageRotation(grayImage, params->CENTER_POINT.x, params->CENTER_POINT.y,
+                                        params->ROTATION_ANGLE, params->RIGHT_OR_LEFT);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
         showResultImages();
         break;
@@ -250,20 +273,24 @@ void MainWindow::runAction(int state){
         resultImages[0] = process->grayMapping(params->PIXEL, originImage->getImage()->width(),
                                                originImage->getImage()->height(), params->GRAY_WINDOW.x,
                                                params->GRAY_WINDOW.y);
+        imageR = process->grayMapping(params->PIXEL, originImage->getImage()->width(),
+                                      originImage->getImage()->height(), params->GRAY_WINDOW.x,
+                                      params->GRAY_WINDOW.y);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
+        widthO = originImage->getImage()->width();
+        heightO = originImage->getImage()->height();
         if(originImage != NULL){
             delete originImage;
         }
         if(grayImage != NULL){
             delete grayImage;
         }
-        originImage = process->grayMapping(params->PIXEL, originImage->getImage()->width(),
-                                           originImage->getImage()->height(), params->GRAY_WINDOW.x,
-                                           params->GRAY_WINDOW.y);
+        originImage = process->grayMapping(params->PIXEL, widthO, heightO, params->GRAY_WINDOW.x, params->GRAY_WINDOW.y);
         grayImage = process->toGray(originImage);
         showImage(ui->originImage, originImage->getImage());
         showImage(ui->grayImage, grayImage->getImage());
         showResultImages();
+        params->IS_G_W = true;
         break;
 
     //图像增强
@@ -274,27 +301,33 @@ void MainWindow::runAction(int state){
                                                originImage->getImage()->width(),
                                                originImage->getImage()->height(),params->GRAY_WINDOW.x,
                                                params->GRAY_WINDOW.y);
+        imageR = process->grayMapping(process->laplaceSharpening(params->PIXEL,originImage->getImage()->width(),originImage->getImage()->height()),
+                                      originImage->getImage()->width(),
+                                      originImage->getImage()->height(),params->GRAY_WINDOW.x,
+                                      params->GRAY_WINDOW.y);
         resultImages[0]->setRemark(resultImages[0]->getRemark().prepend("图像增强成功！"));
         ui->remarkLabel->setText(resultImages[0]->getRemark());
+        widthO = originImage->getImage()->width();
+        heightO = originImage->getImage()->height();
         if(originImage != NULL){
             delete originImage;
         }
         if(grayImage != NULL){
             delete grayImage;
         }
-        originImage = process->grayMapping(params->PIXEL, originImage->getImage()->width(),
-                                           originImage->getImage()->height(), params->GRAY_WINDOW.x,
-                                           params->GRAY_WINDOW.y);
+        originImage = process->grayMapping(params->PIXEL, widthO, heightO, params->GRAY_WINDOW.x, params->GRAY_WINDOW.y);
         grayImage = process->toGray(originImage);
         showImage(ui->originImage, originImage->getImage());
         showImage(ui->grayImage, grayImage->getImage());
         showResultImages();
+        params->IS_LA = true;
         break;
     //灰度反转
     case 6:
         resultImages = new ImageInfo*[1];
         resultNum = 1;
         resultImages[0] = process->grayInversion(originImage);
+        imageR = process->grayInversion(originImage);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
         showResultImages();
         break;
@@ -303,6 +336,7 @@ void MainWindow::runAction(int state){
         resultImages = new ImageInfo*[1];
         resultNum = 1;
         resultImages[0] = process->hReverse(originImage);
+        imageR = process->hReverse(originImage);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
         showResultImages();
         break;
@@ -330,8 +364,32 @@ void MainWindow::wheelEvent(QWheelEvent *event){
     cWidth += (int) cWidth * step;
     cHeight += (int) cHeight * step;
 
-    QImage temp = resultImages[0]->getImage()->scaled(cWidth, cHeight, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    QImage temp = imageR->getImage()->scaled(cWidth, cHeight, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     delete resultImages[0];
     resultImages[0] = new ImageInfo("", "", new QImage(temp));
     showResultImages();
 }
+
+void MainWindow::on_actionundo_triggered()
+{
+    qDebug() << "Undo";
+    qDebug()<<state->getIndex();
+    params = state->undoAction();
+    qDebug() << state->getIndex();
+    runAction(params->code);
+    ui->actionundo->setEnabled(state->canUndo());
+    ui->actiongoto->setEnabled(state->canGoto());
+}
+
+
+void MainWindow::on_actiongoto_triggered()
+{
+    qDebug()<<"Goto";
+    qDebug()<<state->getIndex();
+    params = state->gotoAction();
+    qDebug()<<state->getIndex();
+    runAction(params->code);
+    ui->actionundo->setEnabled(state->canUndo());
+    ui->actiongoto->setEnabled(state->canGoto());
+}
+

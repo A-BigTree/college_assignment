@@ -14,6 +14,12 @@ struct Index{
 class ParameterSetting
 {
 public:
+    //命令
+    int code;
+
+    //直方图
+    bool IS_HI;
+
     //图片缩放
     Index WIDTH_AND_HEIGHT;  //缩放图片宽高
 
@@ -26,7 +32,8 @@ public:
     bool IS_G_W;
     int GRAY_SCALE; //最大灰度范围
     Index GRAY_WINDOW; //灰度窗参数
-    unsigned short *PIXEL; //大灰度值
+    unsigned short *PIXEL; //灰度值
+    int PIXEL_SUM;
 
     //图像增强
     bool IS_LA;
@@ -46,6 +53,12 @@ public:
 
     //初始化参数
     void initParameters(ImageInfo* image);
+
+    //设置命令
+    void setCode(int code){
+        this->code = code;
+    }
+
     //设置图片缩放参数
     void setScale(int width, int height);
     //按比例图片缩放
