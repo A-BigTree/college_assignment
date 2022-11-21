@@ -88,88 +88,8 @@ void MainWindow::on_actionImport_triggered(){
 }
 
 
-
 void MainWindow::on_pushButton_clicked(){
-    //初始化
-    if(resultImages!=NULL){
-        delete []resultImages;
-    }
-    resultNum = 0;
-
-    switch (ui->comboBox->currentIndex()) {
-
-    //直方图均衡化
-    case 0:
-        resultImages = new ImageInfo*[2];
-        resultNum = 2;
-        resultImages[1] = process->imageAverage(originImage);
-        resultImages[0] = process->imageAverage(originImage, false);
-        ui->remarkLabel->setText("直方图均衡化成功！");
-        showResultImages();
-        break;
-
-    //傅里叶变换
-    case 1:
-        break;
-
-    //图片缩放
-    case 2:
-        resultImages = new ImageInfo*[1];
-        resultNum = 1;
-        resultImages[0] = process->imageZoom(grayImage, params->WIDTH_AND_HEIGHT.x, params->WIDTH_AND_HEIGHT.y);
-        ui->remarkLabel->setText(resultImages[0]->getRemark());
-        showResultImages();
-        break;
-
-    //图片旋转
-    case 3:
-        resultImages = new ImageInfo*[1];
-        resultNum = 1;
-        resultImages[0] = process->imageRotation(grayImage, params->CENTER_POINT.x, params->CENTER_POINT.y,
-                                                 params->ROTATION_ANGLE, params->RIGHT_OR_LEFT);
-        ui->remarkLabel->setText(resultImages[0]->getRemark());
-        showResultImages();
-        break;
-
-    //灰度窗调整
-    case 4:
-        resultImages = new ImageInfo*[1];
-        resultNum = 1;
-        resultImages[0] = process->grayMapping(params->PIXEL, originImage->getImage()->width(),
-                                               originImage->getImage()->height(), params->GRAY_WINDOW.x,
-                                               params->GRAY_WINDOW.y);
-        ui->remarkLabel->setText(resultImages[0]->getRemark());
-        showResultImages();
-        break;
-
-    //图像增强
-    case 5:
-        resultImages = new ImageInfo*[1];
-        resultNum = 1;
-        resultImages[0] = process->grayMapping(process->laplaceSharpening(params->PIXEL,originImage->getImage()->width(),originImage->getImage()->height()),
-                                               originImage->getImage()->width(),
-                                               originImage->getImage()->height(),params->GRAY_WINDOW.x,
-                                               params->GRAY_WINDOW.y);
-        resultImages[0]->setRemark(resultImages[0]->getRemark().prepend("图像增强成功！"));
-        ui->remarkLabel->setText(resultImages[0]->getRemark());
-        if(originImage != NULL){
-            delete originImage;
-        }
-        if(grayImage != NULL){
-            delete grayImage;
-        }
-        originImage = process->grayMapping(params->PIXEL, originImage->getImage()->width(),
-                                           originImage->getImage()->height(), params->GRAY_WINDOW.x,
-                                           params->GRAY_WINDOW.y);
-        grayImage = process->toGray(originImage);
-        showImage(ui->originImage, originImage->getImage());
-        showImage(ui->grayImage, grayImage->getImage());
-        showResultImages();
-        break;
-
-    default:
-        break;
-    }
+    runAction(ui->comboBox->currentIndex());
 }
 
 
@@ -277,3 +197,117 @@ void MainWindow::on_actionSave_triggered(){
     ui->remarkLabel->setText(QString("结果图像保存成功！共%1张.").arg(i));
 }
 
+
+void MainWindow::runAction(int state){
+    if(originImage == NULL){
+        return;
+    }
+    //初始化
+    if(resultImages!=NULL){
+        delete []resultImages;
+    }
+    resultNum = 0;
+
+    switch (state) {
+
+    //直方图均衡化
+    case 0:
+        resultImages = new ImageInfo*[2];
+        resultNum = 2;
+        resultImages[1] = process->imageAverage(originImage);
+        resultImages[0] = process->imageAverage(originImage, false);
+        ui->remarkLabel->setText("直方图均衡化成功！");
+        showResultImages();
+        break;
+
+    //傅里叶变换
+    case 1:
+        break;
+
+    //图片缩放
+    case 2:
+        resultImages = new ImageInfo*[1];
+        resultNum = 1;
+        resultImages[0] = process->imageZoom(grayImage, params->WIDTH_AND_HEIGHT.x, params->WIDTH_AND_HEIGHT.y);
+        ui->remarkLabel->setText(resultImages[0]->getRemark());
+        showResultImages();
+        break;
+
+    //图片旋转
+    case 3:
+        resultImages = new ImageInfo*[1];
+        resultNum = 1;
+        resultImages[0] = process->imageRotation(grayImage, params->CENTER_POINT.x, params->CENTER_POINT.y,
+                                                 params->ROTATION_ANGLE, params->RIGHT_OR_LEFT);
+        ui->remarkLabel->setText(resultImages[0]->getRemark());
+        showResultImages();
+        break;
+
+    //灰度窗调整
+    case 4:
+        resultImages = new ImageInfo*[1];
+        resultNum = 1;
+        resultImages[0] = process->grayMapping(params->PIXEL, originImage->getImage()->width(),
+                                               originImage->getImage()->height(), params->GRAY_WINDOW.x,
+                                               params->GRAY_WINDOW.y);
+        ui->remarkLabel->setText(resultImages[0]->getRemark());
+        if(originImage != NULL){
+            delete originImage;
+        }
+        if(grayImage != NULL){
+            delete grayImage;
+        }
+        originImage = process->grayMapping(params->PIXEL, originImage->getImage()->width(),
+                                           originImage->getImage()->height(), params->GRAY_WINDOW.x,
+                                           params->GRAY_WINDOW.y);
+        grayImage = process->toGray(originImage);
+        showImage(ui->originImage, originImage->getImage());
+        showImage(ui->grayImage, grayImage->getImage());
+        showResultImages();
+        break;
+
+    //图像增强
+    case 5:
+        resultImages = new ImageInfo*[1];
+        resultNum = 1;
+        resultImages[0] = process->grayMapping(process->laplaceSharpening(params->PIXEL,originImage->getImage()->width(),originImage->getImage()->height()),
+                                               originImage->getImage()->width(),
+                                               originImage->getImage()->height(),params->GRAY_WINDOW.x,
+                                               params->GRAY_WINDOW.y);
+        resultImages[0]->setRemark(resultImages[0]->getRemark().prepend("图像增强成功！"));
+        ui->remarkLabel->setText(resultImages[0]->getRemark());
+        if(originImage != NULL){
+            delete originImage;
+        }
+        if(grayImage != NULL){
+            delete grayImage;
+        }
+        originImage = process->grayMapping(params->PIXEL, originImage->getImage()->width(),
+                                           originImage->getImage()->height(), params->GRAY_WINDOW.x,
+                                           params->GRAY_WINDOW.y);
+        grayImage = process->toGray(originImage);
+        showImage(ui->originImage, originImage->getImage());
+        showImage(ui->grayImage, grayImage->getImage());
+        showResultImages();
+        break;
+    //灰度反转
+    case 6:
+        resultImages = new ImageInfo*[1];
+        resultNum = 1;
+        resultImages[0] = process->grayInversion(originImage);
+        ui->remarkLabel->setText(resultImages[0]->getRemark());
+        showResultImages();
+        break;
+    //左右翻转
+    case 7:
+        resultImages = new ImageInfo*[1];
+        resultNum = 1;
+        resultImages[0] = process->hReverse(originImage);
+        ui->remarkLabel->setText(resultImages[0]->getRemark());
+        showResultImages();
+        break;
+
+    default:
+        break;
+    }
+}

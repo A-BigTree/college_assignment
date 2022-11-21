@@ -359,7 +359,6 @@ unsigned short* ImageProcess::laplaceSharpening(unsigned short *pixels, int widt
     return res;
 }
 
-
 ImageInfo* ImageProcess::grayInversion(ImageInfo *image){
     QImage* imageR = new QImage(image->getImage()->width(), image->getImage()->height(), QImage::Format_Indexed8);
     imageR->setColorCount(256);

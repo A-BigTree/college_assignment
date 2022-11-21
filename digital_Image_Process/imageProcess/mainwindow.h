@@ -31,6 +31,8 @@ public:
     void showImage(QLabel *label, QImage *image);
     //显示结果图片（未完成
     void showResultImages();
+    //运行功能
+    void runAction(int state);
 
 private slots:
     //读取图片

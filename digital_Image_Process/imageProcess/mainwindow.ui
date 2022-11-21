@@ -88,6 +88,16 @@
         <string>图像增强</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>灰度反转</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>图像左右反转</string>
+       </property>
+      </item>
      </widget>
     </item>
     <item row="0" column="0" rowspan="3">
