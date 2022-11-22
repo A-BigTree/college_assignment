@@ -219,8 +219,8 @@ void MainWindow::runAction(int state){
     if(resultImages!=NULL){
         delete []resultImages;
     }
-    if(imageR != NULL){
-        delete imageR;
+    if(imageR == NULL){
+        imageR = originImage;
     }
     resultNum = 0;
 
@@ -233,8 +233,8 @@ void MainWindow::runAction(int state){
         resultImages = new ImageInfo*[2];
         resultNum = 2;
         resultImages[1] = process->imageAverage(originImage);
-        imageR = process->imageAverage(originImage);
-        resultImages[0] = process->imageAverage(originImage, false);
+        resultImages[0] = process->imageAverage(imageR, false);
+        imageR = process->imageAverage(originImage, false);
         ui->remarkLabel->setText("直方图均衡化成功！");
         showResultImages();
         params->IS_HI = true;
@@ -248,7 +248,7 @@ void MainWindow::runAction(int state){
     case 2:
         resultImages = new ImageInfo*[1];
         resultNum = 1;
-        resultImages[0] = process->imageZoom(grayImage, params->WIDTH_AND_HEIGHT.x, params->WIDTH_AND_HEIGHT.y);
+        resultImages[0] = process->imageZoom(imageR, params->WIDTH_AND_HEIGHT.x, params->WIDTH_AND_HEIGHT.y);
         imageR = process->imageZoom(grayImage, params->WIDTH_AND_HEIGHT.x, params->WIDTH_AND_HEIGHT.y);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
         showResultImages();
@@ -258,7 +258,7 @@ void MainWindow::runAction(int state){
     case 3:
         resultImages = new ImageInfo*[1];
         resultNum = 1;
-        resultImages[0] = process->imageRotation(grayImage, params->CENTER_POINT.x, params->CENTER_POINT.y,
+        resultImages[0] = process->imageRotation(imageR, params->CENTER_POINT.x, params->CENTER_POINT.y,
                                                  params->ROTATION_ANGLE, params->RIGHT_OR_LEFT);
         imageR = process->imageRotation(grayImage, params->CENTER_POINT.x, params->CENTER_POINT.y,
                                         params->ROTATION_ANGLE, params->RIGHT_OR_LEFT);
@@ -326,7 +326,7 @@ void MainWindow::runAction(int state){
     case 6:
         resultImages = new ImageInfo*[1];
         resultNum = 1;
-        resultImages[0] = process->grayInversion(originImage);
+        resultImages[0] = process->grayInversion(imageR);
         imageR = process->grayInversion(originImage);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
         showResultImages();
@@ -335,7 +335,7 @@ void MainWindow::runAction(int state){
     case 7:
         resultImages = new ImageInfo*[1];
         resultNum = 1;
-        resultImages[0] = process->hReverse(originImage);
+        resultImages[0] = process->hReverse(imageR);
         imageR = process->hReverse(originImage);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
         showResultImages();

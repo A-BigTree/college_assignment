@@ -3,14 +3,19 @@
 
 #include "parametersetting.h"
 
+//撤销最大步数
 #define MAX_STATE 5
 
 class StateLinked
 {
 private:
+    //参数循环队列
     ParameterSetting *params = new ParameterSetting[MAX_STATE];
+    //头指针
     int sP = 0;
+    //尾指针
     int eP = 0;
+    //撤销前进运动指针
     int iP = 0;
 
 public:
