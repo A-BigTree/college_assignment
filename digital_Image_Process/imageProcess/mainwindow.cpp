@@ -134,8 +134,7 @@ void MainWindow::on_actionParameters_triggered()
 }
 
 
-void MainWindow::on_actionread_binary_triggered()
-{
+void MainWindow::on_actionread_binary_triggered(){
     QString path = QFileDialog::getOpenFileName(this, "打开文件", "C:\\Users", "*");
 
     if(!path.isEmpty()){
@@ -234,7 +233,7 @@ void MainWindow::runAction(int state){
         resultNum = 2;
         resultImages[1] = process->imageAverage(originImage);
         resultImages[0] = process->imageAverage(imageR, false);
-        imageR = process->imageAverage(originImage, false);
+        imageR = process->imageAverage(imageR, false);
         ui->remarkLabel->setText("直方图均衡化成功！");
         showResultImages();
         params->IS_HI = true;
@@ -249,7 +248,7 @@ void MainWindow::runAction(int state){
         resultImages = new ImageInfo*[1];
         resultNum = 1;
         resultImages[0] = process->imageZoom(imageR, params->WIDTH_AND_HEIGHT.x, params->WIDTH_AND_HEIGHT.y);
-        imageR = process->imageZoom(grayImage, params->WIDTH_AND_HEIGHT.x, params->WIDTH_AND_HEIGHT.y);
+        imageR = process->imageZoom(imageR, params->WIDTH_AND_HEIGHT.x, params->WIDTH_AND_HEIGHT.y);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
         showResultImages();
         break;
@@ -260,7 +259,7 @@ void MainWindow::runAction(int state){
         resultNum = 1;
         resultImages[0] = process->imageRotation(imageR, params->CENTER_POINT.x, params->CENTER_POINT.y,
                                                  params->ROTATION_ANGLE, params->RIGHT_OR_LEFT);
-        imageR = process->imageRotation(grayImage, params->CENTER_POINT.x, params->CENTER_POINT.y,
+        imageR = process->imageRotation(imageR, params->CENTER_POINT.x, params->CENTER_POINT.y,
                                         params->ROTATION_ANGLE, params->RIGHT_OR_LEFT);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
         showResultImages();
@@ -327,7 +326,7 @@ void MainWindow::runAction(int state){
         resultImages = new ImageInfo*[1];
         resultNum = 1;
         resultImages[0] = process->grayInversion(imageR);
-        imageR = process->grayInversion(originImage);
+        imageR = process->grayInversion(imageR);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
         showResultImages();
         break;
@@ -336,7 +335,7 @@ void MainWindow::runAction(int state){
         resultImages = new ImageInfo*[1];
         resultNum = 1;
         resultImages[0] = process->hReverse(imageR);
-        imageR = process->hReverse(originImage);
+        imageR = process->hReverse(imageR);
         ui->remarkLabel->setText(resultImages[0]->getRemark());
         showResultImages();
         break;
