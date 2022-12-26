@@ -15,6 +15,9 @@
 
 package lexical_Analyzer;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Token {
     private AcceptState state;
     private final StringBuilder token;

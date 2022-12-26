@@ -1,0 +1,5 @@
+aTemp =600;
+bTemp= 50.5 + 500;
+wsx_2022=aTemp*bTemp;
+chy_2023 =2-bTemp;
+z=x/2+y*30.5-20;

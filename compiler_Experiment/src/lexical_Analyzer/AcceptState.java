@@ -24,7 +24,7 @@ public enum AcceptState {
     SEPARATOR("Separator");
     private final String acceptName;
 
-    private AcceptState(String acceptName){
+    AcceptState(String acceptName){
         this.acceptName = acceptName;
     }
 

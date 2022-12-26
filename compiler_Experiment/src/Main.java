@@ -1,8 +1,9 @@
-import lexical_Analyzer.ConstructionTable;
+
+import lexical_Analyzer.LexicalAnalyzer;
 
 public class Main {
     public static void main(String[] args) {
-        ConstructionTable.init();
-        System.out.println(ConstructionTable.move(0, '1'));
+        LexicalAnalyzer.init("data/lexical.txt", "data/lexical_out.txt");
+        LexicalAnalyzer.analysisLexical();
     }
 }
