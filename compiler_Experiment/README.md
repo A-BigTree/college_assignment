@@ -577,3 +577,28 @@ public class Main {
 ## 1.5 实验体会
 
 熟悉正则表达式、NFA与DFA之间的转换和DFA最优化过程，可以正确使用到自己构建的问题中去；在使用程序语言具体实现的时候，对词法分析过程有了更深刻的理解。
+
+
+
+# 二、语法分析程序
+
+
+
+## 2.1 实验要求
+
+1. Input
+   - Stream of characters 
+   - CFG(Combination of CFGs of some classes of sentences)
+
+2. Output(Syntax tree)
+   - Sequence of derivations if top-down syntax analyzing methods are used.
+   - Sequence of reductions if bottom-up syntax analyzing methods are used.
+
+3. Classes of sentences are defined by yourself
+
+4. Error handling may be included
+
+
+
+## 2.2 设计思路
+
