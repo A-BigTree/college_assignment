@@ -15,7 +15,6 @@
 
 package lexical_Analyzer;
 
-import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
 import java.io.*;
 
@@ -65,7 +64,8 @@ public class LexicalAnalyzer {
             int temp;
             try{
                 temp = ConstructionTable.move(state, context.charAt(forward));
-            }catch (ValueException valueException) {
+            }catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("Error:" + forward + ":\n" + context.substring(forward));
                 return;
             }

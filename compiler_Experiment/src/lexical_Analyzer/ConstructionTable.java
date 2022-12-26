@@ -15,7 +15,6 @@
 
 package lexical_Analyzer;
 
-import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 import lexical_Analyzer.character.*;
 
 import java.util.ArrayList;
@@ -153,7 +152,7 @@ public class ConstructionTable {
     /*
      * 根据状态与输入符号确定下一动作状态
      */
-    public static int move(int state, char c) throws ValueException {
+    public static int move(int state, char c) throws Exception {
         InputCharacter character = null;
         for (InputCharacter inputCharacter : characters) {
             character = inputCharacter;
@@ -164,7 +163,7 @@ public class ConstructionTable {
             }
         }
         if(character == null){
-            throw new ValueException("No Input Character value: " + c);
+            throw new Exception("No Input Character value: " + c);
         }
         return constructionTable.get(state).get(character);
     }
