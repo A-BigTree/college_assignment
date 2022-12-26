@@ -35,6 +35,10 @@ public class Token {
         token.append(c);
     }
 
+    public String getToken(){
+        return token.toString();
+    }
+
     @Override
     public String toString() {
         return token.toString() + "\t:" + state.getAcceptName();
