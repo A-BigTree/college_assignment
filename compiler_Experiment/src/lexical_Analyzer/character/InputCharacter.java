@@ -16,7 +16,7 @@
 package lexical_Analyzer.character;
 
 public abstract class InputCharacter {
-    private String characterName;
+    private final String characterName;
 
     public InputCharacter(String characterName){
         this.characterName = characterName;
