@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 public abstract class NonterminalExpression extends AbstractExpression {
     private ArrayList<AbstractExpression> grammar;
+    private boolean isEmptyString = false;
 
     public NonterminalExpression(String name) {
         super(name);
@@ -32,6 +33,14 @@ public abstract class NonterminalExpression extends AbstractExpression {
 
     public ArrayList<AbstractExpression> getGrammar() {
         return grammar;
+    }
+
+    public void setEmptyString(boolean emptyString) {
+        isEmptyString = emptyString;
+    }
+
+    public boolean isEmptyString() {
+        return isEmptyString;
     }
 
     @Override
