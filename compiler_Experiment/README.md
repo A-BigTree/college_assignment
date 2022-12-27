@@ -754,3 +754,401 @@ $$
 
 ## 2.3 代码设计
 
+终结符与非终结符同时继承于一个抽象符号，同时非终结符中包含该抽象符号的列表用来表示生成文法，类间关系如下图：
+
+```mermaid
+classDiagram
+
+AbstractExpression <|-- TerminalExpresson
+AbstractExpression <|-- NonterminalExpresson
+AbstractExpression <--o NonterminalExpresson
+
+
+class AbstractExpression{
+<<Abstract>>
+}
+
+class TerminalExpresson{
+<<Abstract>>
+}
+
+class NonterminalExpresson{
+<<Abstract>>
+-grammar:ArrayList< AbstractExpression >
+}
+```
+
+### 2.3.1 符号表示
+
+- 抽象基类具体实现如下：
+
+```java
+public abstract class AbstractExpression {
+    private final String name;
+
+    public AbstractExpression(String name){
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public abstract boolean isToken(Token token);
+}
+```
+
+- 终结符抽象基类
+
+```java
+public abstract class TerminalExpression extends AbstractExpression{
+    public TerminalExpression(String name) {
+        super(name);
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(this == o){
+            return true;
+        }
+        if(o==null ||getClass() != o.getClass()){
+            return false;
+        }
+        AbstractExpression expression = (AbstractExpression) o;
+        return this.getName().equals(expression.getName());
+    }
+
+    @Override
+    public int hashCode(){
+        return getName().hashCode();
+    }
+}
+```
+
+- 非终结符抽象基类
+
+
+```java
+public abstract class NonterminalExpression extends AbstractExpression {
+    private ArrayList<AbstractExpression> grammar;
+    private boolean isEmptyString = false;
+
+    public NonterminalExpression(String name) {
+        super(name);
+    }
+
+    public void setGrammar(ArrayList<AbstractExpression> grammar) {
+        this.grammar = grammar;
+    }
+
+    public ArrayList<AbstractExpression> getGrammar() {
+        return grammar;
+    }
+
+    public void setEmptyString(boolean emptyString) {
+        isEmptyString = emptyString;
+    }
+
+    public boolean isEmptyString() {
+        return isEmptyString;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getName()).append(" → ");
+        for (AbstractExpression expression : grammar) {
+            builder.append(expression.getName()).append(" ");
+        }
+        return builder.toString();
+    }
+}
+```
+
+
+
+### 2.3.2 构建预测分析表
+
+用一个终结符列表表示输入终结符，一个非终结符列表表示文法，一个嵌套`HashMap`表示预测分析表，具体表示如下：
+
+```java
+public class ForecastTable {
+    //文法表
+    public static ArrayList<NonterminalExpression> grammars = new ArrayList<>();
+    //输入终结符记录表
+    private static final ArrayList<TerminalExpression> terminals = new ArrayList<>();
+    //预测分析表
+    private static final HashMap<String, HashMap<TerminalExpression, Integer>> forecastTable = new HashMap<>();
+
+    //初始化终结符
+    private static void initTerminals() {
+        terminals.add(new Id()); //0
+        terminals.add(new Plus()); //1
+        terminals.add(new Multiple()); //2
+        terminals.add(new LeftBracket()); //3
+        terminals.add(new RightBracket()); //4
+        terminals.add(new Terminator()); //5
+    }
+
+    private static void initGrammars() {
+        //初始化非终结符
+        NonterminalExpression E = new ExpressionE(),
+                E1 = new ExpressionE1(),
+                T = new ExpressionT(),
+                T1 = new ExpressionT1(),
+                F = new ExpressionF();
+        //文法0：
+        NonterminalExpression grammar0 = new ExpressionE();
+        ArrayList<AbstractExpression> g0 = new ArrayList<>();
+        g0.add(T);
+        g0.add(E1);
+        grammar0.setGrammar(g0);
+        grammars.add(grammar0);
+        //文法1：
+        NonterminalExpression grammar1 = new ExpressionE1();
+        ArrayList<AbstractExpression> g1 = new ArrayList<>();
+        g1.add(terminals.get(1));
+        g1.add(T);
+        g1.add(E1);
+        grammar1.setGrammar(g1);
+        grammars.add(grammar1);
+        //文法2：
+        NonterminalExpression grammar2 = new ExpressionE1();
+        ArrayList<AbstractExpression> g2 = new ArrayList<>();
+        g2.add(new EmptyString());
+        grammar2.setGrammar(g2);
+        grammar2.setEmptyString(true);
+        grammars.add(grammar2);
+        //文法3：
+        NonterminalExpression grammar3 = new ExpressionT();
+        ArrayList<AbstractExpression> g3 = new ArrayList<>();
+        g3.add(F);
+        g3.add(T1);
+        grammar3.setGrammar(g3);
+        grammars.add(grammar3);
+        //文法4：
+        NonterminalExpression grammar4 = new ExpressionT1();
+        ArrayList<AbstractExpression> g4 = new ArrayList<>();
+        g4.add(terminals.get(2));
+        g4.add(F);
+        g4.add(T1);
+        grammar4.setGrammar(g4);
+        grammars.add(grammar4);
+        //文法5：
+        NonterminalExpression grammar5 = new ExpressionT1();
+        ArrayList<AbstractExpression> g5 = new ArrayList<>();
+        g5.add(new EmptyString());
+        grammar5.setGrammar(g5);
+        grammar5.setEmptyString(true);
+        grammars.add(grammar5);
+        //文法6：
+        NonterminalExpression grammar6 = new ExpressionF();
+        ArrayList<AbstractExpression> g6 = new ArrayList<>();
+        g6.add(terminals.get(3));
+        g6.add(E);
+        g6.add(terminals.get(4));
+        grammar6.setGrammar(g6);
+        grammars.add(grammar6);
+        //文法7：
+        NonterminalExpression grammar7 = new ExpressionF();
+        ArrayList<AbstractExpression> g7 = new ArrayList<>();
+        g7.add(terminals.get(0));
+        grammar7.setGrammar(g7);
+        grammars.add(grammar7);
+    }
+
+    private static void initForecastTable(){
+        //非终结符E：
+        HashMap<TerminalExpression, Integer> exE = new HashMap<>();
+        exE.put(terminals.get(0), 0);
+        exE.put(terminals.get(1), -1);
+        exE.put(terminals.get(2), -1);
+        exE.put(terminals.get(3), 0);
+        exE.put(terminals.get(4), -1);
+        exE.put(terminals.get(5), -1);
+        forecastTable.put("E",exE);
+        //非终结符E‘：
+        HashMap<TerminalExpression, Integer> exE1 = new HashMap<>();
+        exE1.put(terminals.get(0), -1);
+        exE1.put(terminals.get(1), 1);
+        exE1.put(terminals.get(2), -1);
+        exE1.put(terminals.get(3), -1);
+        exE1.put(terminals.get(4), 2);
+        exE1.put(terminals.get(5), 2);
+        forecastTable.put("E1",exE1);
+        //非终结符T：
+        HashMap<TerminalExpression, Integer> exT = new HashMap<>();
+        exT.put(terminals.get(0), 3);
+        exT.put(terminals.get(1), -1);
+        exT.put(terminals.get(2), -1);
+        exT.put(terminals.get(3), 3);
+        exT.put(terminals.get(4), -1);
+        exT.put(terminals.get(5), -1);
+        forecastTable.put("T", exT);
+        //非终结符T'：
+        HashMap<TerminalExpression, Integer> exT1 = new HashMap<>();
+        exT1.put(terminals.get(0), -1);
+        exT1.put(terminals.get(1), 5);
+        exT1.put(terminals.get(2), 4);
+        exT1.put(terminals.get(3), -1);
+        exT1.put(terminals.get(4), 5);
+        exT1.put(terminals.get(5), 5);
+        forecastTable.put("T1", exT1);
+        //非终结符F：
+        HashMap<TerminalExpression, Integer> exF = new HashMap<>();
+        exF.put(terminals.get(0), 7);
+        exF.put(terminals.get(1), -1);
+        exF.put(terminals.get(2), -1);
+        exF.put(terminals.get(3), 6);
+        exF.put(terminals.get(4), -1);
+        exF.put(terminals.get(5), -1);
+        forecastTable.put("F", exF);
+    }
+```
+
+- 具体动作同时封装在函数中，返回自然数表示输出编号第几个文法，-1表示出现错误，-2表示终结符匹配，具体实现如下：
+
+```java
+public class ForecastTable {
+    //文法表
+    public static ArrayList<NonterminalExpression> grammars = new ArrayList<>();
+    //输入终结符记录表
+    private static final ArrayList<TerminalExpression> terminals = new ArrayList<>();
+    //预测分析表
+    private static final HashMap<String, HashMap<TerminalExpression, Integer>> forecastTable = new HashMap<>();
+
+    //...
+	
+    public static int forecastAnalysis(AbstractExpression expression, Token token) throws Exception {
+        //匹配动作
+        if (expression.isToken(token)){
+            return -2;
+        }
+        //寻找归约
+        TerminalExpression terminalExpression = null;
+        for(TerminalExpression terminal: terminals){
+            terminalExpression = terminal;
+            if(terminalExpression.isToken(token)){
+                break;
+            }else{
+                terminalExpression = null;
+            }
+        }
+        if(terminalExpression == null){
+            throw new Exception("No Input Token:" + token.toString());
+        }
+        return forecastTable.get(expression.getName()).get(terminalExpression);
+    }
+}
+```
+
+### 2.3.3 语法分析过程
+
+使用栈来存储分析状态，具体实现如下：
+
+```java
+public class SyntaxParser {
+	//...
+    public static void syntaxParser(ArrayList<Token> tokens){
+        System.out.println("\nSyntax Parser:\n");
+        //token预处理
+        Token terminator = new Token();
+        terminator.addChar('$');
+        terminator.setState(AcceptState.SEPARATOR);
+        tokens.add(terminator);
+        System.out.println(tokens);
+        //栈预处理
+        Stack<AbstractExpression> stack = new Stack<>();
+        stack.push(new Terminator());
+        stack.push(new ExpressionE());
+        //token串指针
+        int forward = 0;
+        //开始归约
+        while(forward < tokens.size()){
+            AbstractExpression expression = stack.peek();
+            int temp;
+            try{
+                temp = ForecastTable.forecastAnalysis(expression, tokens.get(forward));
+            } catch (Exception e) {
+                System.out.println("Error: " + forward + ":");
+                for(int i = forward; i < tokens.size() - 1; i++){
+                    System.out.print(tokens.get(i).getToken() + " ");
+                }
+                System.out.print('\n');
+                e.printStackTrace();
+                return;
+            }
+            if(temp == -1){//出现错误
+                System.out.println("Error: " + forward + ":");
+                for(int i = forward; i < tokens.size() - 1; i++){
+                    System.out.print(tokens.get(i).getToken() + " ");
+                }
+                System.out.print('\n');
+                return;
+            }else if (temp == -2){//匹配动作
+                try {
+                    fileWriter.write("Match:" + tokens.get(forward).toString() + "\n");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Match:" + tokens.get(forward).toString());
+                stack.pop();
+                forward++;
+            }else {//输出动作
+                NonterminalExpression grammar = ForecastTable.grammars.get(temp);
+                System.out.println("Output:" + grammar.toString());
+                try {
+                    fileWriter.write("Output:" + grammar + "\n");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if(grammar.isEmptyString()){//空串输出
+                    stack.pop();
+                }else{
+                    stack.pop();
+                    for(int i = grammar.getGrammar().size() - 1; i >= 0; i--){
+                        stack.push(grammar.getGrammar().get(i));
+                    }
+                }
+            }
+        }
+        if (fileWriter != null) {
+            try {
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+## 2.4 结果展示
+
+主函数如下：
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("======================================================");
+        LexicalAnalyzer.init("data/syntax.txt", "data/lexical_out.txt");
+        LexicalAnalyzer.analysisLexical();
+        System.out.println("======================================================");
+        ArrayList<Token> tokens = LexicalAnalyzer.getTokens();
+        SyntaxParser.init("data/syntax_out.txt");
+        SyntaxParser.syntaxParser(tokens);
+    }
+}
+```
+
+- 输入文件：
+
+<img src="image/image-20221227151058864.png" alt="image-20221227151058864" style="zoom:33%;" />
+
+- 输出文件：
+
+<img src="image/image-20221227151131934.png" alt="image-20221227151131934" style="zoom:33%;" />
+
+## 2.5 实验体会
+
+熟悉并掌握了LL(1)文法的的构造方法，包括消除左递归、构建First集和Follow集并构建预测分析表，通过语法分析程序的上手操作，对自顶向上的语法分析过程有了进一步了解
