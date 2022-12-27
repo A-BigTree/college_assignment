@@ -20,7 +20,7 @@ import syntax_Parser.expression.TerminalExpression;
 
 public class Plus extends TerminalExpression {
     public Plus() {
-        super("Plus");
+        super("+");
     }
 
     @Override

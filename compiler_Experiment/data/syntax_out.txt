@@ -1,0 +1,35 @@
+Output:E → T E1 
+Output:T → F T1 
+Output:F → Id 
+Match:tempA	:Id
+Output:T1 → * F T1 
+Match:*	:Operator
+Output:F → ( E ) 
+Match:(	:Operator
+Output:E → T E1 
+Output:T → F T1 
+Output:F → Id 
+Match:tempB	:Id
+Output:T1 → * F T1 
+Match:*	:Operator
+Output:F → ( E ) 
+Match:(	:Operator
+Output:E → T E1 
+Output:T → F T1 
+Output:F → Id 
+Match:tempC	:Id
+Output:T1 → Empty string 
+Output:E1 → + T E1 
+Match:+	:Operator
+Output:T → F T1 
+Output:F → Id 
+Match:tempD	:Id
+Output:T1 → Empty string 
+Output:E1 → Empty string 
+Match:)	:Operator
+Output:T1 → Empty string 
+Output:E1 → Empty string 
+Match:)	:Operator
+Output:T1 → Empty string 
+Output:E1 → Empty string 
+Match:$	:Separator

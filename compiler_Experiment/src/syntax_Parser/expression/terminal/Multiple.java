@@ -20,7 +20,7 @@ import syntax_Parser.expression.TerminalExpression;
 
 public class Multiple extends TerminalExpression {
     public Multiple() {
-        super("Multiple");
+        super("*");
     }
 
     @Override

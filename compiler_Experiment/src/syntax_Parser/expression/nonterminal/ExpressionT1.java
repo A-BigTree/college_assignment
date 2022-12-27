@@ -19,6 +19,6 @@ import syntax_Parser.expression.NonterminalExpression;
 
 public class ExpressionT1 extends NonterminalExpression {
     public ExpressionT1() {
-        super("T'");
+        super("T1");
     }
 }

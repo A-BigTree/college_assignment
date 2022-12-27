@@ -645,12 +645,13 @@ $$
 $$
 \begin{aligned}
 &(0)E\rightarrow TE'\\
-&(1)E'\rightarrow +TE\\
+&(1)E'\rightarrow +TE'\\
 &(2)E'\rightarrow \varepsilon\\
 &(3)T\rightarrow FT'\\
 &(4)T'\rightarrow *FT'\\
 &(5)T'\rightarrow\varepsilon\\
-&(6)F\rightarrow (E)|id
+&(6)F\rightarrow (E)\\
+&(7)F\rightarrow id
 \end{aligned}
 $$
 

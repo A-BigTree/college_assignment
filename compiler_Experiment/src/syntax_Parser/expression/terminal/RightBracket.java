@@ -20,7 +20,7 @@ import syntax_Parser.expression.TerminalExpression;
 
 public class RightBracket extends TerminalExpression {
     public RightBracket() {
-        super("Right bracket");
+        super(")");
     }
 
     @Override

@@ -17,41 +17,47 @@ package lexical_Analyzer;
 
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class LexicalAnalyzer {
     private static FileReader fileReader;
     private static FileWriter fileWriter;
 
-    public static void init(String inFile, String outFile){
+    private static ArrayList<Token> tokens = new ArrayList<>();
+
+    public static void init(String inFile, String outFile) {
         ConstructionTable.init();
-        try{
+        try {
             fileReader = new FileReader(inFile);
         } catch (FileNotFoundException e) {
             System.out.println(inFile + " Not Found.");
             return;
         }
-        try{
+        try {
             fileWriter = new FileWriter(outFile, false);
             fileWriter.write("");
         } catch (IOException e) {
             e.printStackTrace();
             return;
-        }finally {
-            if(fileWriter != null){
-                try{
+        } finally {
+            if (fileWriter != null) {
+                try {
                     fileWriter.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
-        try{
+        try {
             fileWriter = new FileWriter(outFile, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    public static void analysisLexical(String text){
+
+    public static void analysisLexical(String text) {
+        System.out.println("\nLexical Analyzer:\n");
+        System.out.println(text + "\n");
         //字符预处理
         String context = text + " ";
         //字符指针
@@ -60,17 +66,17 @@ public class LexicalAnalyzer {
         int state = 0;
         //当前目标串
         Token token = new Token();
-        while(forward < context.length()){
+        while (forward < context.length()) {
             int temp;
-            try{
+            try {
                 temp = ConstructionTable.move(state, context.charAt(forward));
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Error:" + forward + ":\n" + context.substring(forward));
                 return;
             }
-            if(temp == -1){
-                switch (state){
+            if (temp == -1) {
+                switch (state) {
                     case 1:
                         token.setState(AcceptState.ID);
                         break;
@@ -82,6 +88,8 @@ public class LexicalAnalyzer {
                     case 5:
                     case 6:
                     case 7:
+                    case 10:
+                    case 11:
                         token.setState(AcceptState.OPERATOR);
                         break;
                     case 8:
@@ -92,6 +100,7 @@ public class LexicalAnalyzer {
                         break;
                 }
                 System.out.println(token);
+                tokens.add(token);
                 try {
                     fileWriter.write(token + "\n");
                 } catch (IOException e) {
@@ -99,19 +108,19 @@ public class LexicalAnalyzer {
                 }
                 state = 0;
                 token = new Token();
-            }else if(temp == -2){
+            } else if (temp == -2) {
                 forward++;
-            }else if(temp == -3){
+            } else if (temp == -3) {
                 System.out.println("Error:" + forward + ":\n" + context.substring(forward));
                 return;
-            }else{
+            } else {
                 token.addChar(context.charAt(forward));
                 state = temp;
                 forward++;
             }
         }
-        if(fileWriter != null){
-            try{
+        if (fileWriter != null) {
+            try {
                 fileWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -119,23 +128,23 @@ public class LexicalAnalyzer {
         }
     }
 
-    private static String readFile(){
+    private static String readFile() {
         StringBuilder stringBuilder = new StringBuilder();
-        try{
+        try {
             int data;
-            while((data= fileReader.read()) != -1){
+            while ((data = fileReader.read()) != -1) {
                 //回车转为空格
-                if(data == 10 || data == 13){
+                if (data == 10 || data == 13) {
                     stringBuilder.append(' ');
-                }else{
-                    stringBuilder.append((char)data);
+                } else {
+                    stringBuilder.append((char) data);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            if(fileReader != null){
-                try{
+        } finally {
+            if (fileReader != null) {
+                try {
                     fileReader.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -144,7 +153,12 @@ public class LexicalAnalyzer {
         }
         return stringBuilder.toString();
     }
-    public static void analysisLexical(){
+
+    public static void analysisLexical() {
         analysisLexical(readFile());
+    }
+
+    public static ArrayList<Token> getTokens() {
+        return tokens;
     }
 }

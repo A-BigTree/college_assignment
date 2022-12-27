@@ -20,7 +20,7 @@ import syntax_Parser.expression.TerminalExpression;
 
 public class LeftBracket extends TerminalExpression {
     public LeftBracket() {
-        super("Left bracket");
+        super("(");
     }
 
     @Override
