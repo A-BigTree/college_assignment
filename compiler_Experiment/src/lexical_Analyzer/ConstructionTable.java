@@ -41,6 +41,8 @@ public class ConstructionTable {
         characters.add(new Division());
         characters.add(new Semicolon());
         characters.add(new Space());
+        characters.add(new LeftBracket());
+        characters.add(new RightBracket());
     }
 
     /*
@@ -60,6 +62,8 @@ public class ConstructionTable {
         I0.put(characters.get(8), 7);
         I0.put(characters.get(9), 9);
         I0.put(characters.get(10), -2);
+        I0.put(characters.get(11), 10);
+        I0.put(characters.get(12), 11);
         constructionTable.add(I0);
         //状态1:
         HashMap<InputCharacter, Integer> I1 = new HashMap<>();
@@ -74,6 +78,8 @@ public class ConstructionTable {
         I1.put(characters.get(8), -1);
         I1.put(characters.get(9), -1);
         I1.put(characters.get(10), -1);
+        I1.put(characters.get(11), -1);
+        I1.put(characters.get(12), -1);
         constructionTable.add(I1);
         //状态2:
         HashMap<InputCharacter, Integer> I2 = new HashMap<>();
@@ -88,6 +94,8 @@ public class ConstructionTable {
         I2.put(characters.get(8), -1);
         I2.put(characters.get(9), -1);
         I2.put(characters.get(10), -1);
+        I2.put(characters.get(11), -1);
+        I2.put(characters.get(12), -1);
         constructionTable.add(I2);
         //状态3:
         HashMap<InputCharacter, Integer> I3 = new HashMap<>();
@@ -132,6 +140,8 @@ public class ConstructionTable {
         I8.put(characters.get(8), -1);
         I8.put(characters.get(9), -1);
         I8.put(characters.get(10), -1);
+        I8.put(characters.get(11), -1);
+        I8.put(characters.get(12), -1);
         constructionTable.add(I8);
         //状态9:
         HashMap<InputCharacter, Integer> I9 = new HashMap<>();
@@ -139,6 +149,18 @@ public class ConstructionTable {
             I9.put(character, -1);
         }
         constructionTable.add(I9);
+        //状态10:
+        HashMap<InputCharacter, Integer> I10 = new HashMap<>();
+        for (InputCharacter character : characters) {
+            I10.put(character, -1);
+        }
+        constructionTable.add(I10);
+        //状态11:
+        HashMap<InputCharacter, Integer> I11 = new HashMap<>();
+        for (InputCharacter character : characters) {
+            I11.put(character, -1);
+        }
+        constructionTable.add(I11);
     }
 
     /*

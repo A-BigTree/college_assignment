@@ -602,3 +602,154 @@ public class Main {
 
 ## 2.2 设计思路
 
+实现简单桌面计算器的自顶向下的语法分析，通过实现LL(1)文法预测分析表对输入字串进行分析，具体文法如下：
+$$
+\begin{aligned}
+&0.E\rightarrow E+T|T\\
+&1.T\rightarrow T*F|F\\
+&2.F\rightarrow (E)|id
+\end{aligned}
+$$
+
+### 2.2.1 消除左递归
+
+由内到外，从左到右顺序：
+
+1. 产生式2无左递归；
+2. 产生式1存在左递归，进行消除
+
+$$
+T\rightarrow FT'\\
+T'\rightarrow *FT'|\varepsilon
+$$
+
+3. 产生式0存在左递归，进行消除
+
+$$
+E\rightarrow TE'\\
+E'\rightarrow +TE'|\varepsilon
+$$
+
+综上，消除左递归后产生文法G'为： 
+$$
+\begin{aligned}
+&(0)E\rightarrow TE'\\
+&(1)E'\rightarrow +TE'|\varepsilon\\
+&(2)T\rightarrow FT'\\
+&(3)T'\rightarrow *FT'|\varepsilon\\
+&(4)F\rightarrow (E)|id
+\end{aligned}
+$$
+
+将每个产生式拆分并编号：
+$$
+\begin{aligned}
+&(0)E\rightarrow TE'\\
+&(1)E'\rightarrow +TE\\
+&(2)E'\rightarrow \varepsilon\\
+&(3)T\rightarrow FT'\\
+&(4)T'\rightarrow *FT'\\
+&(5)T'\rightarrow\varepsilon\\
+&(6)F\rightarrow (E)|id
+\end{aligned}
+$$
+
+### 2.2.2 构建First和Follow集
+
+对每个产生式可以很容易得到每个产生式的**FIRST集**，如下表所示：
+$$
+\begin{array}{cc}
+产生式&FIRST\\
+\hline
+E\rightarrow TE' &\{(,id\} \\
+\hline
+E'\rightarrow +TE' &\{+\} \\
+
+E'\rightarrow \varepsilon &\{\varepsilon\} \\
+\hline
+T\rightarrow FT' &\{(,id\} \\
+\hline
+T'\rightarrow *FT' &\{*\} \\
+
+T'\rightarrow \varepsilon &\{\varepsilon\}\\
+\hline
+F\rightarrow (E) &\{(\} \\
+
+F\rightarrow id &\{id\} \\
+\hline
+\end{array}
+$$
+下面获取**FOLLOW集**：
+
+`FOLLOW(E)`:
+
+- E为开始符号，所以加入\$；根据产生式$F\rightarrow (E)$得，FOLLOW(E)中加入`(`；
+- $FOLLOW(E)=\{(,\$\}$；
+
+`FOLLOW(E')`
+
+- E'只出现在E产生式的右部尾部，所以FOLLOW(E')=FOLLOW(E)；
+- $FOLLOW(E’)=\{(,\$\}$；
+
+`FOLLOW(T)`
+
+- 产生式$E'\rightarrow +TE'$，E'在T后面，所以加入FIRST(E')-{ε}，即`+`；又$\varepsilon\in FIRST(E')$，所以FOLLOW(E')加入FOLLOW(T)中；
+- $FOLLOW(T)=\{+,(,\$\}$；
+
+`FOLLOW(T')`
+
+- T'只出现在T产生式右部尾部，所以FOLLOW(T')=FOLLOW(T)；
+- $FOLLOW(T')=\{+,(,\$\}$；
+
+`FOLLOW(F)`
+
+- 产生式$T'\rightarrow *FT'$，T'在F后面，所以加入FIRST(T')-{ε}，即`*`；又$\varepsilon\in FIRST(T')$，所以FOLLOW(T')加入FOLLOW(F)中；
+- $FOLLOW(T)=\{*,+,(,\$\}$；
+
+构建FIRST和FOLLOW表：
+$$
+\begin{array}{c|c|c}
+产生式&FIRST&FOLLOW\\
+\hline
+E\rightarrow TE' &\{(,id\}&\{(,\$\} \\
+\hline
+E'\rightarrow +TE' &\{+\} &\{(,\$\} \\
+
+E'\rightarrow \varepsilon &\{\varepsilon\}&\{(,\$\} \\
+\hline
+T\rightarrow FT' &\{(,id\}&\{+,(,\$\} \\
+\hline
+T'\rightarrow *FT' &\{*\} &\{+,(,\$\}\\
+
+T'\rightarrow \varepsilon &\{\varepsilon\}&\{+,(,\$\}\\
+\hline
+F\rightarrow (E) &\{(\} & \{*,+,(,\$\}\\
+
+F\rightarrow id &\{id\} & \{*,+,(,\$\}\\
+\hline
+\end{array}
+$$
+
+### 2.2.3 构建预测分析表
+
+根据构建规则，构建预测分析表如下：
+$$
+\begin{array}{c|c|c|c|c|c|c}
+(非)终结符&id&+&*&(&)&\$\\
+\hline
+E&E\rightarrow TE' &  & &E\rightarrow TE' & &\\
+\hline
+E'& &E'\rightarrow +TE'  & & &E'\rightarrow \varepsilon & E'\rightarrow \varepsilon\\
+\hline
+T&T\rightarrow FT' &  & &T\rightarrow FT' & &\\
+\hline
+T'& &T'\rightarrow \varepsilon  &T'\rightarrow *FT' & &T'\rightarrow \varepsilon &T'\rightarrow \varepsilon\\
+\hline
+F&F\rightarrow id &  & &F\rightarrow (E) & &\\
+
+\end{array}
+$$
+
+
+## 2.3 代码设计
+
