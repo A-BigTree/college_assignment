@@ -15,20 +15,19 @@
 
 package syntax_Parser.expression;
 
-import lexical_Analyzer.Token;
 
-public abstract class TerminalExpression extends AbstractExpression{
+public abstract class TerminalExpression extends AbstractExpression {
 
     public TerminalExpression(String name) {
         super(name);
     }
 
     @Override
-    public boolean equals(Object o){
-        if(this == o){
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if(o==null ||getClass() != o.getClass()){
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         AbstractExpression expression = (AbstractExpression) o;
@@ -36,7 +35,7 @@ public abstract class TerminalExpression extends AbstractExpression{
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return getName().hashCode();
     }
 
