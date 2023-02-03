@@ -237,7 +237,7 @@ public class Letter extends InputCharacter{
 
 ### 1.3.2 返回结果与状态
 
-因为每个返回串都有一个结果状态，为了减少系统内存使用，这里使用享元模式的枚举使用，状态枚举类如下：
+因为每个返回串都有一个结果状态，为了减少系统内存使用，这里使用**享元模式**的枚举使用，状态枚举类如下：
 
 ```java
 public enum AcceptState {
